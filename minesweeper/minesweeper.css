@@ -1,0 +1,41 @@
+.board {
+    display: inline-block;
+    border: solid black;
+    border-width: 1px 1px 0 0;
+    background-color: gray
+}
+
+.board .row {
+    display: flex;
+}
+
+.board .cell {
+    border: solid black;
+    border-width:0 0 1px 1px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-size: 40px;
+    cursor: pointer;
+    user-select: none
+}
+
+.board .cell.bomb {
+    background-color: red
+}
+
+.board .cell.empty {
+    background-color: lightgray;
+}
+
+.board .cell.empty span {
+    display: none
+}
+
+.board .cell.number {
+    background-color: green
+}
+
+button.show {
+    display: none;
+}
