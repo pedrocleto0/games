@@ -1,6 +1,6 @@
 const cellContent = {
     empty: 0,
-    bomb: "*",
+    bomb: "✱",
     flag: "#",
     unflagged: "",
 }
@@ -12,17 +12,33 @@ const gameStatus = {
     notStarted: 'not-started'
 }
 
-class MineSweeper {
-    initialized = false
+class Minesweeper {
+    defaultSize = [10, 10]
+    defaultMinesCount = 10
+    initialized = null
     mineField = null
     size = null
     minesCount = null
     container = null
-    status = gameStatus.notStarted
-    revealedCount = 0
+    controls = null
+    status = null
+    revealedCount = null
 
-    constructor(container, size/*[rows, cols]*/, minesCount) {
+    constructor(container, controls) {
         this.container = container
+        this.controls = controls
+        controls.querySelector('.new-game').addEventListener('click', () => {
+            const cols = parseInt(controls.querySelector('.cols').value) || this.defaultSize[0]
+            const rows = parseInt(controls.querySelector('.rows').value) || this.defaultSize[1]
+            const minesCount = parseInt(controls.querySelector('.minesCount').value) || this.defaultMinesCount
+            this.newGame([rows, cols], minesCount)
+        })
+    }
+
+    newGame(size = this.defaultSize, minesCount = this.defaultMinesCount) {
+        this.status = gameStatus.notStarted
+        this.initialized = false
+        this.revealedCount = 0
         this.size = { rows: size[0], cols: size[1] };
         this.minesCount = minesCount
         this.mineField = new Array()
@@ -30,6 +46,7 @@ class MineSweeper {
             this.mineField.push(new Array())
             this.mineField[i] = new Array(this.size.rows).fill(cellContent.empty)
         }
+        this.drawBoard();
     }
 
     init(x, y) {
@@ -80,6 +97,9 @@ class MineSweeper {
     }
 
     drawBoard() {
+        while (this.container.lastElementChild) {
+            this.container.removeChild(this.container.lastElementChild);
+          }
         const board = document.createElement('div')
         board.classList.add('board')
         for (let i = 0; i < this.size.rows; i++) {
@@ -125,9 +145,11 @@ class MineSweeper {
         if (!cell.revealed) {
             if (!cell.flagged) {
                 cell.flagged = true
+                cell.classList.add('flag')
                 cell.querySelector('span').innerText = cellContent.flag
             } else {
                 cell.flagged = false
+                cell.classList.remove('flag')
                 cell.querySelector('span').innerText = cellContent.unflagged
             }
         }
@@ -173,9 +195,11 @@ class MineSweeper {
                 cell.classList.add('empty')
                 this.repeatAround(x, y, this.reveal)
             } else if (this.mineField[x][y] == cellContent.bomb) {
+                cell.classList.remove('flag')
                 cell.classList.add('bomb')
             } else {
                 cell.classList.add('number')
+                cell.classList.add('number-' + this.mineField[x][y])
             }
 
             if (this.status == gameStatus.playing) {
@@ -210,6 +234,7 @@ class MineSweeper {
 
 document.addEventListener('DOMContentLoaded', function () {
     const mainDiv = document.getElementById('main')
-    const game = new MineSweeper(mainDiv, [10, 10], 10);
-    game.drawBoard();
+    const mainControls = document.getElementById('gameControls')
+    const game = new Minesweeper(mainDiv, mainControls);
+    game.newGame();
 }, false);
