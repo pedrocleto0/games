@@ -3,6 +3,7 @@ const cellContent = {
     bomb: "✱",
     flag: "#",
     unflagged: "",
+    maybe: "?",
 }
 
 const gameStatus = {
@@ -116,7 +117,9 @@ class Minesweeper {
                 cell.game = this;
                 cell.revealed = false;
                 cell.flagged = false;
+                cell.maybed = false;
                 cell.addEventListener('click', this.onCellClick)
+                cell.addEventListener('dblclick', this.onCellDblClick)
                 cell.addEventListener('contextmenu', this.onCellRightClick)
                 row.appendChild(cell);
             }
@@ -125,8 +128,8 @@ class Minesweeper {
         this.container.appendChild(board);
     }
 
-    cellClick(cell) {
-        let [x, y] = cell.position
+    cellClick(x, y) {
+        const cell = this.getCell(x, y)
         if (!this.initialized) {
             this.init(x, y)
         }
@@ -141,16 +144,27 @@ class Minesweeper {
             }
     }
 
-    cellRightClick(cell) {
+    cellDblClick(x, y) {
+        this.repeatAround(x, y, this.cellClick)
+    }
+
+    cellRightClick(x, y) {
+        const cell = this.getCell(x, y)
         if (!cell.revealed) {
             if (!cell.flagged) {
                 cell.flagged = true
                 cell.classList.add('flag')
                 cell.querySelector('span').innerText = cellContent.flag
             } else {
-                cell.flagged = false
-                cell.classList.remove('flag')
-                cell.querySelector('span').innerText = cellContent.unflagged
+                if (!cell.maybed) {
+                    cell.maybed = true
+                    cell.querySelector('span').innerText = cellContent.maybe
+                } else {
+                    cell.flagged = false
+                    cell.maybed = false
+                    cell.classList.remove('flag')
+                    cell.querySelector('span').innerText = cellContent.unflagged
+                }
             }
         }
     }
@@ -223,12 +237,17 @@ class Minesweeper {
 
     onCellClick(event) {
         event.preventDefault();
-        this.game.cellClick(this)
+        this.game.cellClick(...this.position)
+    }
+
+    onCellDblClick(event) {
+        event.preventDefault();
+        this.game.cellDblClick(...this.position)
     }
 
     onCellRightClick(event) {
         event.preventDefault();
-        this.game.cellRightClick(this)
+        this.game.cellRightClick(...this.position)
     }
 }
 
