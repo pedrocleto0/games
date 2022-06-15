@@ -37,6 +37,9 @@ class Minesweeper {
     }
 
     newGame(size = this.defaultSize, minesCount = this.defaultMinesCount) {
+        if (minesCount >= size[0]*size[1]) {
+            minesCount = size[0]*size[1] - 1
+        }
         this.status = gameStatus.notStarted
         this.initialized = false
         this.revealedCount = 0
@@ -57,7 +60,7 @@ class Minesweeper {
             const i = Math.round(Math.random() * (this.size.cols - 1))
             const j = Math.round(Math.random() * (this.size.rows - 1))
             if (this.mineField[i][j] != cellContent.bomb
-                && i != x && j != y
+                && (i != x || j != y)
             ) {
                 this.mineField[i][j] = cellContent.bomb
                 this.incrementAround(i, j)
