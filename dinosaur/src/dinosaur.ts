@@ -97,7 +97,7 @@ class Dinosaur {
 }
 
 class Dino {
-    static DEFAULT_SIZE = { width: 25, height: 25 }
+    static DEFAULT_SIZE = { width: 50, height: 50 }
     static START_POSITION = { x: 50, y: 0 }
     static COLOR = 'green'
     static JUMP_HEIGHT = 100
@@ -132,10 +132,10 @@ class Dino {
         const up = (timeFromJumpStart > Dino.JUMP_DURATION) ? 0 :
             (Math.sin(Math.PI * timeFromJumpStart / Dino.JUMP_DURATION) * Dino.JUMP_HEIGHT)
         this.position.y = Dino.START_POSITION.y + up
-        const cx = this.position.x + this.size.width
-        const cy = this.game.canvasSize.height - (this.position.y + this.size.height)
+        const cx = this.position.x + this.size.width/2
+        const cy = this.game.canvasSize.height - (this.position.y + this.size.height/2)
         ctx.beginPath();
-        ctx.ellipse(cx, cy, this.size.width, this.size.height, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy, this.size.width/2, this.size.height/2, 0, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fillStyle = Dino.COLOR;
         ctx.fill();
@@ -144,7 +144,7 @@ class Dino {
 
 class Cactus {
     static MAX_SIZE = { width: 40, height: 60 }
-    static MIN_SIZE = { width: 25, height: 50 }
+    static MIN_SIZE = { width: 20, height: 40 }
     static COLOR = 'blue'
 
     size: { width: number, height: number }
@@ -157,7 +157,7 @@ class Cactus {
             height: Math.random() * (Cactus.MAX_SIZE.height - Cactus.MIN_SIZE.height) + Cactus.MIN_SIZE.height,
         }
 
-        this.position.y = Math.random()*100
+        this.position.y = Math.round(Math.random()*2)*40
         this.createTime = (new Date).getTime()
         this.position.x = this.game.canvasSize.width
     }
